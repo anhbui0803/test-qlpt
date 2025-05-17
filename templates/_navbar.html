@@ -1,0 +1,40 @@
+<!-- templates/_navbar.html -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">QLPT</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <!-- left‐side -->
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link" href="/account/listings">Tin của tôi</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/account/bookings">Hợp đồng của tôi</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/account/notifications">Thông báo</a>
+          </li>
+        </ul>
+        <!-- right‐side -->
+        <ul class="navbar-nav">
+          {% if request.session.user %}
+            <li class="nav-item">
+              <span class="nav-link">Hi, {{ request.session.user.full_name }}</span>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/account/logout">Đăng xuất</a>
+            </li>
+            <!-- Đăng tin only for logged-in users -->
+            <li class="nav-item">
+              <a class="nav-link btn btn-sm btn-success text-white ms-2" href="/dang-tin">Đăng tin</a>
+            </li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="/account/login">Đăng nhập</a></li>
+            <li class="nav-item"><a class="nav-link" href="/account/register">Đăng ký</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
