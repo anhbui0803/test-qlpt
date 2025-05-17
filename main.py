@@ -1,6 +1,6 @@
 import re
 from math import ceil
-from fastapi import FastAPI, Request, Form, HTTPException, status, UploadFile, File, Response
+from fastapi import FastAPI, Request, Form, HTTPException, status, UploadFile, File, Response, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 # from account.routers import account_router
@@ -40,18 +40,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # globals để endpoint sử dụng
 SECRET_KEY = os.getenv("SECRET_KEY")
 MONGODB_URI = os.getenv("MONGODB_URI")
-mongo_client = AsyncIOMotorClient(
-    MONGODB_URI,
-    tls=True,
-    tlsCAFile=certifi.where(),
-)
-db = mongo_client["hotel_database"]
-
-if db is None:
-    print("Failed to connect to MongoDB")
-else:
-    print("Connected to MongoDB")
-
+if not MONGODB_URI:
+    raise RuntimeError("MONGODB_URI chưa được thiết lập!")
 
 app.add_middleware(
     SessionMiddleware,
@@ -136,6 +126,22 @@ Trân trọng,
         server.send_message(msg)
 
 
+async def get_db():
+    """
+    Mỗi lần có request, ta khởi tạo một client mới trên event‐loop hiện tại,
+    và đóng nó khi xong request.
+    """
+    client = AsyncIOMotorClient(
+        MONGODB_URI,
+        tls=True,
+        tlsCAFile=certifi.where(),
+    )
+    try:
+        yield client["hotel_database"]
+    finally:
+        client.close()
+
+
 @app.get("/", tags=["listing"])
 async def root(
     request: Request,
@@ -143,6 +149,7 @@ async def root(
     district: str | None = None,
     price: str | None = None,
     type: str | None = None,
+    db=Depends(get_db),  # <-- inject db ở đây
 ):
     page_size = 6
 
