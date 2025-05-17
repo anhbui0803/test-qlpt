@@ -39,43 +39,18 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # globals để endpoint sử dụng
 SECRET_KEY = os.getenv("SECRET_KEY")
-mongo_client: AsyncIOMotorClient | None = None
-db = None  # sẽ gán vào startup
 MONGODB_URI = os.getenv("MONGODB_URI")
+mongo_client = AsyncIOMotorClient(
+    MONGODB_URI,
+    tls=True,
+    tlsCAFile=certifi.where(),
+)
+db = mongo_client["hotel_database"]
 
-
-@app.on_event("startup")
-def on_startup():
-    global mongo_client, db, MONGODB_URI
-
-    # 1) Sync client dùng để "ping" ngay lúc startup
-    sync = MongoClient(
-        MONGODB_URI,
-        tls=True,
-        tlsCAFile=certifi.where(),
-        serverSelectionTimeoutMS=5_000,
-    )
-    sync.admin.command("ping")  # nếu ko connect được sẽ crash ngay
-
-    # 2) Async client khởi tạo trong đúng event‐loop đang mở
-    mongo_client = AsyncIOMotorClient(
-        MONGODB_URI,
-        tls=True,
-        tlsCAFile=certifi.where(),
-    )
-    db = mongo_client["hotel_database"]
-    
-    if db is None:
-        print("Failed to connect to MongoDB")
-    else: 
-        print("Connected to MongoDB")
-
-
-@app.on_event("shutdown")
-def on_shutdown():
-    global mongo_client
-    if mongo_client:
-        mongo_client.close()
+if db is None:
+    print("Failed to connect to MongoDB")
+else:
+    print("Connected to MongoDB")
 
 
 app.add_middleware(
