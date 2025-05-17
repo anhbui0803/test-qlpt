@@ -164,31 +164,31 @@ async def root(
     price: str | None = None,
     type: str | None = None,
 ):
-    # page_size = 6
+    page_size = 6
 
-    # # 1) Build filter
-    # filt: dict = {}
-    # if district:
-    #     # Dùng regex để so khớp case‐insensitive
-    #     filt["district"] = re.compile(
-    #         f"^{re.escape(district)}$", re.IGNORECASE)
-    # if type:
-    #     filt["type"] = type
+    # 1) Build filter
+    filt: dict = {}
+    if district:
+        # Dùng regex để so khớp case‐insensitive
+        filt["district"] = re.compile(
+            f"^{re.escape(district)}$", re.IGNORECASE)
+    if type:
+        filt["type"] = type
 
-    # price_map = {
-    #     "0-2000000": (0, 2_000_000),
-    #     "2000000-5000000": (2_000_000, 5_000_000),
-    #     "5000000-10000000": (5_000_000, 10_000_000),
-    #     "10000000-": (10_000_000, None),
-    # }
-    # if price and price in price_map:
-    #     low, high = price_map[price]
-    #     cond: dict = {}
-    #     if low is not None:
-    #         cond["$gte"] = low
-    #     if high is not None:
-    #         cond["$lte"] = high
-    #     filt["price"] = cond
+    price_map = {
+        "0-2000000": (0, 2_000_000),
+        "2000000-5000000": (2_000_000, 5_000_000),
+        "5000000-10000000": (5_000_000, 10_000_000),
+        "10000000-": (10_000_000, None),
+    }
+    if price and price in price_map:
+        low, high = price_map[price]
+        cond: dict = {}
+        if low is not None:
+            cond["$gte"] = low
+        if high is not None:
+            cond["$lte"] = high
+        filt["price"] = cond
 
     # # 2) Count & pagination
     # total = await db.listings.count_documents(filt)
