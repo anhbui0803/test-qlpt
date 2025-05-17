@@ -182,23 +182,23 @@ async def root(
     pages = ceil(total / page_size) if total else 1
     page = max(1, min(page, pages))
 
-    # # 3) Query this page
-    # cursor = db.listings.find(filt).sort("created_at", -1)
-    # docs = await cursor.skip((page - 1) * page_size).limit(page_size).to_list(page_size)
+    # 3) Query this page
+    cursor = db.listings.find(filt).sort("created_at", -1)
+    docs = await cursor.skip((page - 1) * page_size).limit(page_size).to_list(page_size)
 
     # 4) Render
-    # return templates.TemplateResponse(
-    #     "index.html",
-    #     {
-    #         "request": request,
-    #         "listings": docs,
-    #         "page": page,
-    #         "pages": pages,
-    #         "district": district or "",
-    #         "price": price or "",
-    #         "type": type or "",
-    #         "districts": district_options,
-    #     }
-    # )
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "listings": docs,
+            "page": page,
+            "pages": pages,
+            "district": district or "",
+            "price": price or "",
+            "type": type or "",
+            "districts": district_options,
+        }
+    )
 
-    return templates.TemplateResponse("test_dumb_index.html", {"request": request})
+    # return templates.TemplateResponse("test_dumb_index.html", {"request": request})
