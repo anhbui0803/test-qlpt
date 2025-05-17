@@ -64,6 +64,11 @@ def on_startup():
         tlsCAFile=certifi.where(),
     )
     db = mongo_client["hotel_database"]
+    
+    if db is None:
+        print("Failed to connect to MongoDB")
+    else: 
+        print("Connected to MongoDB")
 
 
 @app.on_event("shutdown")
