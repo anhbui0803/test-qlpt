@@ -190,10 +190,10 @@ async def root(
             cond["$lte"] = high
         filt["price"] = cond
 
-    # # 2) Count & pagination
-    # total = await db.listings.count_documents(filt)
-    # pages = ceil(total / page_size) if total else 1
-    # page = max(1, min(page, pages))
+    # 2) Count & pagination
+    total = await db.listings.count_documents(filt)
+    pages = ceil(total / page_size) if total else 1
+    page = max(1, min(page, pages))
 
     # # 3) Query this page
     # cursor = db.listings.find(filt).sort("created_at", -1)
